@@ -125,7 +125,8 @@ public class Battery: Module {
                     ACStatus: !value.isBatteryPowered,
                     isCharging: value.isCharging,
                     optimizedCharging: value.optimizedChargingEngaged,
-                    time: value.timeToEmpty == 0 && value.timeToCharge != 0 ? value.timeToCharge : value.timeToEmpty
+                    time: value.timeToEmpty == 0 && value.timeToCharge != 0 ? value.timeToCharge : value.timeToEmpty,
+                    wattage: value.voltage * (Double(abs(value.amperage)) / 1000)
                 )
             case let widget as BatteryDetailsWidget:
                 widget.setValue(

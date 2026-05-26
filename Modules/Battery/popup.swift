@@ -16,7 +16,7 @@ internal class Popup: PopupWrapper {
     private let dashboardHeight: CGFloat = 90
     private var detailsHeight: CGFloat = (22 * 4) + Constants.Popup.separatorHeight
     private let batteryHeight: CGFloat = (22 * 7) + Constants.Popup.separatorHeight
-    private let adapterHeight: CGFloat = (22 * 4) + Constants.Popup.separatorHeight
+    private let adapterHeight: CGFloat = (22 * 5) + Constants.Popup.separatorHeight
     private let processHeight: CGFloat = 22
     
     private var dashboardView: NSView? = nil
@@ -41,6 +41,7 @@ internal class Popup: PopupWrapper {
     private var temperatureField: NSTextField? = nil
     
     private var powerField: NSTextField? = nil
+    private var chargingActualPowerField: NSTextField? = nil
     private var chargingStateField: NSTextField? = nil
     private var chargingCurrentField: NSTextField? = nil
     private var chargingVoltageField: NSTextField? = nil
@@ -178,6 +179,7 @@ internal class Popup: PopupWrapper {
         
         self.chargingStateField = popupRow(container, title: "\(localizedString("Is charging")):", value: "").1
         self.powerField = popupRow(container, title: "\(localizedString("Power")):", value: "").1
+        self.chargingActualPowerField = popupRow(container, title: "\(localizedString("Actual power")):", value: "").1
         self.chargingCurrentField = popupRow(container, title: "\(localizedString("Current")):", value: "").1
         self.chargingVoltageField = popupRow(container, title: "\(localizedString("Voltage")):", value: "").1
         
@@ -310,6 +312,8 @@ internal class Popup: PopupWrapper {
         self.temperatureField?.stringValue = temperature(value.temperature)
         
         self.powerField?.stringValue = value.isBatteryPowered ? localizedString("Not connected") : "\(value.ACwatts) W"
+        let actualChargeWatts = Double(value.chargingCurrent) * Double(value.chargingVoltage) / 1_000_000
+        self.chargingActualPowerField?.stringValue = value.isBatteryPowered ? localizedString("Not connected") : "\(actualChargeWatts.roundTo(decimalPlaces: 2)) W"
         self.chargingStateField?.stringValue = value.isCharging ? localizedString("Yes") : localizedString("No")
         self.chargingCurrentField?.stringValue = value.isBatteryPowered ? localizedString("Not connected") : "\(value.chargingCurrent) mA"
         self.chargingVoltageField?.stringValue = value.isBatteryPowered ? localizedString("Not connected") : "\(value.chargingVoltage) mV"

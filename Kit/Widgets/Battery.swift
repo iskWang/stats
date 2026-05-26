@@ -25,6 +25,7 @@ public class BatteryWidget: WidgetWrapper {
     private var _charging: Bool = false
     private var _ACStatus: Bool = false
     private var _optimizedCharging: Bool = false
+    private var _wattage: Double = 0
     
     public init(title: String, preview: Bool = false) {
         let widgetTitle: String = title
@@ -70,18 +71,20 @@ public class BatteryWidget: WidgetWrapper {
         var charging: Bool = false
         var ACStatus: Bool = false
         var optimizedCharging: Bool = false
+        var wattage: Double = 0
         self.queue.sync {
             percentage = self._percentage
             time = self._time
             charging = self._charging
             ACStatus = self._ACStatus
             optimizedCharging = self._optimizedCharging
+            wattage = self._wattage
         }
         
         var width: CGFloat = 0
         var x: CGFloat = 0
         let isShortTimeFormat: Bool = self.timeFormat == "short"
-        
+
         if !self.hideAdditionalWhenFull || (self.hideAdditionalWhenFull && percentage != 1 && !optimizedCharging) {
             switch self.additional {
             case "percentage":
@@ -118,6 +121,34 @@ public class BatteryWidget: WidgetWrapper {
                 }
                 let rowWidth = self.drawTwoRows(
                     first: Double(time*60).printSecondsToHoursMinutesSeconds(short: isShortTimeFormat),
+                    second: value,
+                    x: x
+                ).rounded(.up)
+                width += rowWidth
+                x += rowWidth + Constants.Widget.spacing
+            case "wattage":
+                let rowWidth = self.drawOneRow(value: "\(wattage.roundTo(decimalPlaces: 1))W", x: x).rounded(.up)
+                width += rowWidth
+                x += rowWidth + Constants.Widget.spacing
+            case "percentageAndWattage":
+                var value = "n/a"
+                if let percentage {
+                    value = "\(Int((percentage.rounded(toPlaces: 2)) * 100))%"
+                }
+                let rowWidth = self.drawTwoRows(
+                    first: value,
+                    second: "\(wattage.roundTo(decimalPlaces: 1))W",
+                    x: x
+                ).rounded(.up)
+                width += rowWidth
+                x += rowWidth + Constants.Widget.spacing
+            case "wattageAndPercentage":
+                var value = "n/a"
+                if let percentage {
+                    value = "\(Int((percentage.rounded(toPlaces: 2)) * 100))%"
+                }
+                let rowWidth = self.drawTwoRows(
+                    first: "\(wattage.roundTo(decimalPlaces: 1))W",
                     second: value,
                     x: x
                 ).rounded(.up)
@@ -377,10 +408,10 @@ public class BatteryWidget: WidgetWrapper {
         ctx.restoreGState()
     }
     
-    public func setValue(percentage: Double? = nil, ACStatus: Bool? = nil, isCharging: Bool? = nil, optimizedCharging: Bool? = nil, time: Int? = nil) {
+    public func setValue(percentage: Double? = nil, ACStatus: Bool? = nil, isCharging: Bool? = nil, optimizedCharging: Bool? = nil, time: Int? = nil, wattage: Double? = nil) {
         var updated: Bool = false
         let timeFormat: String = Store.shared.string(key: "\(self.title)_timeFormat", defaultValue: self.timeFormat)
-        
+
         if self._percentage != percentage {
             self._percentage = percentage
             updated = true
@@ -403,6 +434,10 @@ public class BatteryWidget: WidgetWrapper {
         }
         if let state = optimizedCharging, self._optimizedCharging != state {
             self._optimizedCharging = state
+            updated = true
+        }
+        if let w = wattage, self._wattage != w {
+            self._wattage = w
             updated = true
         }
         

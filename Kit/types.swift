@@ -141,7 +141,11 @@ internal let BatteryAdditionals: [KeyValue_t] = [
     KeyValue_t(key: "percentage", value: "Percentage"),
     KeyValue_t(key: "time", value: "Time"),
     KeyValue_t(key: "percentageAndTime", value: "Percentage and time"),
-    KeyValue_t(key: "timeAndPercentage", value: "Time and percentage")
+    KeyValue_t(key: "timeAndPercentage", value: "Time and percentage"),
+    KeyValue_t(key: "separator", value: "separator"),
+    KeyValue_t(key: "wattage", value: "Wattage"),
+    KeyValue_t(key: "percentageAndWattage", value: "Percentage and wattage"),
+    KeyValue_t(key: "wattageAndPercentage", value: "Wattage and percentage")
 ]
 
 internal let BatteryInfo: [KeyValue_t] = [
